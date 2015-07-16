@@ -23,7 +23,7 @@ php5-fpm php5-sqlite
 
 ```
 cd /path/to/http/server/index
-git clone https://github.com/psyb0t/websiteMaster.php.git
+git clone https://github.com/psyb0t/websiteMaster.php.git .
 git submodule init
 git submodule update
 ```
@@ -49,6 +49,8 @@ The script returns a JSON response:
     "content_type": [document_content_type]
   }
 ```
+
+The proper way to interact with websiteMaster.php is by websiteMasterClient.php. Check it out here: https://github.com/psyb0t/websiteMasterClient.php
 
 ## Templates
 
