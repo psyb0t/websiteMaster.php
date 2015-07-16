@@ -129,7 +129,7 @@ This results in the possibility of having no key called _dynamic_word1_ or one w
 
 `rewrite_rules`
 
-This declaration specifies the name of the arguments found in a URL and the argument names which will get the values which will then be passed to the template.
+This declaration specifies the name of the arguments found in a URL which will get the values from the URL according to the regex pattern. If an argument is given and the pattern does not apply, an exception is thrown.
 
 __Eg. :__
 ```
