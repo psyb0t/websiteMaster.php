@@ -1,62 +1,60 @@
 <?php
 class render extends actContext {
-  private $db = false;
-  
   public function renderPage() {
     if(!utils::keysOk($this->data, ['url'])) {
-      $message = 'required keys not set';
-      main::log('ERROR', $message);
-      return main::response('ERROR', $message);
+      return $this->response(
+        'ERROR', 'required keys not set'
+      );
     }
     
     $url = $this->data['url'];
     if(!utils::validUrl($url)) {
-      $message = 'invalid url';
-      main::log('ERROR', $message);
-      return main::response('ERROR', $message);
+      return $this->response(
+        'ERROR', 'invalid URL: '.$url
+      );
     }
     
     $pUrl = parse_url($url);
-    
-    $this->db = new sqliteDB(wm_db_file);
-    $db_connect = $this->db->connect();
-    if(!($db_connect['status'] == 'OK')) {
-      $message = 'database connection failed';
-      main::log('ERROR', $message);
-      return main::response('ERROR', $message);
-    }
-    
     $hostData = $this->hostData($pUrl['host']);
     if(!$hostData) {
-      $message = 'could not get host data';
-      main::log('ERROR', $message);
-      return main::response('ERROR', $message);
+      return $this->response(
+        'ERROR', 'could not get host data for '.$pUrl['host']
+      );
     }
     
     $hostData['request']['url'] = $url;
-    
     list($ltBool, $ltData) = template::loadTemplate($hostData);
+    
     if(!$ltBool) {
-      main::log('ERROR', $ltData);
-      return main::respose('ERROR', $ltData);
+      return $this->response(
+        'ERROR', $ltData
+      );
     }
     
     list($content, $content_type) = $ltData;
-    main::log('OK', sprintf('render successful [%s]', $url));
-    return main::response(
-      'OK', 'successfully returned base64 encoded data',
+    
+    return $this->response(
+      'OK', sprintf('render successful [%s]', $url),
       base64_encode($content), $content_type
     );
   }
   
   private function hostData($hostname) {
+    $db = new sqliteDB(wm_db_file);
+    $db_connect = $db->connect();
+    if(!($db_connect['status'] == 'OK')) {
+      return $this->response(
+        'ERROR', 'database connection failed'
+      );
+    }
+    
     $query = "SELECT a.id as site_id, a.hostname, a.template_data,
     b.id as template_id, b.name as template_name, b.path as template_path
     FROM sites a
     LEFT JOIN templates b
     ON b.id = a.template_id
     WHERE hostname = '".$hostname."'";
-    $db_query = $this->db->query($query);
+    $db_query = $db->query($query);
     
     if($db_query['status'] != 'OK') {
       return false;
@@ -84,6 +82,15 @@ class render extends actContext {
         'data' => $data['template_data']
       ]
     ];
+  }
+  
+  private static function response($status, $message, $data = false,
+    $cntType = 'text/plain') {
+    $message = sprintf('[%s] %s', 'ACT::render', $message);
+    main::log($status, $message);
+    return main::response(
+      $status, $message, $data, $cntType
+    );
   }
   
   public function exec() {

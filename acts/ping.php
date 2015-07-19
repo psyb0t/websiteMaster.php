@@ -8,6 +8,12 @@ class ping extends actContext {
     }
     
     $url = $this->data['url'];
+    if(!utils::validUrl($url)) {
+      return $this->response(
+        'ERROR', 'invalid url'
+      );
+    }
+    
     $title = $this->data['title'];
     
     main::loadLibs([
