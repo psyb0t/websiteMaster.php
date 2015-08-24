@@ -1,6 +1,6 @@
-[submodule "lib/sqliteDB"]
-	path = lib/sqliteDB
-	url = git@gist.github.com:/a8c69b9a11a74140aa7f.git
 [submodule "lib/httpRequest"]
 	path = lib/httpRequest
-	url = git@github.com:psyb0t/httpRequest.class.php.git
+	url = https://github.com/psyb0t/httpRequest.class.php.git
+[submodule "lib/sqliteDB"]
+	path = lib/sqliteDB
+	url = https://gist.github.com/a8c69b9a11a74140aa7f.git
