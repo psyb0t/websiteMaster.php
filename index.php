@@ -14,16 +14,24 @@ require(wm_absolute_path.'utils.php');
 
 $inputData = trim(file_get_contents('php://input'));
 if(!$inputData) {
-  main::log('ERROR', 'no input data provided', true);
+  main::log(
+    'ERROR', sprintf(
+      '[%s] no input data provided', $_SERVER['REMOTE_ADDR']
+    ), true
+  );
 }
 
 $inputData = json_decode($inputData, true);
 if(!($inputData && is_array($inputData))) {
-  main::log('ERROR', 'invalid input data', true);
+  main::log('ERROR', sprintf(
+    '[%s] invalid input data', $_SERVER['REMOTE_ADDR']
+  ), true);
 }
 
 if(!utils::keysOk($inputData, ['act', 'data'])) {
-  main::log('ERROR', 'required keys not set', true);
+  main::log('ERROR', sprintf(
+    '[%s] required keys not set', $_SERVER['REMOTE_ADDR']
+  ), true);
 }
 
 $act = $inputData['act'];
@@ -32,6 +40,8 @@ $data = $inputData['data'];
 main::loadLibs([
   'sqliteDB/sqliteDB.class.php'
 ]);
+
+main::initDB();
 
 list($laBool, $laMsg) = main::loadAct($act);
 if(!$laBool) {

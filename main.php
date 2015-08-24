@@ -1,5 +1,45 @@
 <?php
 class main {
+  public static function initDB() {
+    if(!class_exists('sqliteDB')) {
+      main::log('ERROR', 'sqliteDB class not loaded', true);
+    }
+    
+    if(!is_file(wm_db_file)) {
+      if(!fclose(fopen(wm_db_file, 'w'))) {
+        main::log('ERROR', sprintf('can\' create db file %s', wm_db_file));
+      }
+    }
+    
+    $db = new sqliteDB(wm_db_file);
+    $db_connect = $db->connect();
+    if(!($db_connect['status'] == 'OK')) {
+      main::log('ERROR', 'database connection failed', true);
+    }
+    
+    $query = "CREATE TABLE IF NOT EXISTS 'sites' (
+      `id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+      `hostname`	TEXT UNIQUE,
+      `template_id`	INTEGER,
+      `template_data`	TEXT,
+      `pinged`	INTEGER DEFAULT '0'
+    );";
+    $db_query = $db->query($query);
+    if($db_query['status'] != 'OK') {
+      main::log('ERROR', $db_query['message'], true);
+    }
+    
+    $query = "CREATE TABLE IF NOT EXISTS `templates` (
+      `id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+      `name`	TEXT,
+      `path`	TEXT
+    );";
+    $db_query = $db->query($query);
+    if($db_query['status'] != 'OK') {
+      main::log('ERROR', $db_query['message'], true);
+    }
+  }
+  
   public static function loadLibs($libList) {
     foreach($libList as $lib) {
       $libFile = wm_lib_path.$lib;

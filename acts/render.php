@@ -84,7 +84,7 @@ class render extends actContext {
     ];
   }
   
-  private static function response($status, $message, $data = false,
+  private function response($status, $message, $data = false,
     $cntType = 'text/plain') {
     $message = sprintf('[%s] %s', 'ACT::render', $message);
     main::log($status, $message);
